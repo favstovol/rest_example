@@ -13,11 +13,26 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+virtenv = os.environ['APPDIR'] + '/virtenv/'
+os.environ['PYTHON_EGG_CACHE'] = os.path.join(virtenv, 'lib/python3.4/site-packages')
+virtualenv = os.path.join(virtenv, 'bin/activate_this.py')
+try:
+    exec(compile(open(virtualenv, "rb").read(), virtualenv, 'exec'), dict(__file__=virtualenv))
+except:
+    pass
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+install_requires = ['Django>=1.3'],
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
+import sys
+import django.core.handlers.wsgi
+
+os.environ['DJANGO_SETTINGS_MODULE'] = os.environ['OPENSHIFT_APP_NAME']+'.settings'
+sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi', os.environ['OPENSHIFT_APP_NAME']))
+application = django.core.handlers.wsgi.WSGIHandler()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '+0k9h1u6i6pz_6@%b(#xl3*58&4f+11z7$tjk7xmi=m=z9yw04'
